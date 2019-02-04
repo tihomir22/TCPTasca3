@@ -40,7 +40,8 @@ public class Servidor extends Thread {
 
     @Override
     public void run() {
-        try {
+        try {            
+            
             this.socket_s = new ServerSocket(this.puertoServidor);
             System.out.println("[SERVIDOR] Iniciado");
             //Entra en espera de la conexion de un cliente...
