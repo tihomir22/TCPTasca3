@@ -30,8 +30,6 @@ public class Cliente {
     static DataOutputStream out;
     static boolean boolUsuario = false;
     static boolean boolPass = false;
-    static String usuarioRes = "";
-    static String passRes = "";
     static String mensajeEnviado = "";
 
     public static void main(String[] args) {
@@ -41,19 +39,22 @@ public class Cliente {
             in = new DataInputStream(sc.getInputStream());
             out = new DataOutputStream(sc.getOutputStream());
 
-            while (!prefijo.equalsIgnoreCase("fin")) {
+            do {
                 System.out.println("[CLIENTE] Voy a enviar un mensaje...");
                 mensajeEnviado = teclado.nextLine();
                 out.writeUTF(prefijo + ":" + mensajeEnviado);
                 Thread.sleep(1000);
                 System.out.println("[CLIENTE] Esperando respuesta...");
                 mensaje = in.readUTF();
+                System.out.println(mensaje.split(":")[1]);
 
-                System.out.println("[CLIENTE] Necesito enviara ...  " + mensaje);
-                prefijo = mensaje;
-                procesarRespuesta(mensaje);
+                prefijo = mensaje.split(":")[0];
 
-            }
+                if (!prefijo.equalsIgnoreCase("fin")) {
+                    System.out.println("[CLIENTE] Necesito enviara ...  " + prefijo);
+                }
+
+            } while (!prefijo.equalsIgnoreCase("fin"));
             sc.close();
 
         } catch (IOException ex) {
@@ -63,25 +64,4 @@ public class Cliente {
         }
     }
 
-    public static void procesarRespuesta(String mensaje) {
-        String[] respuestaPartida = mensaje.split(":");
-        if (respuestaPartida[0].equalsIgnoreCase("0") && respuestaPartida[1].equalsIgnoreCase("usuario")) {
-            System.out.println("ERROR USUARIO INCORRECTO");
-        } else if (respuestaPartida[0].equalsIgnoreCase("1") && respuestaPartida[1].equalsIgnoreCase("usuario")) {
-            System.out.println("USUARIO CORRECTO!!!");
-            usuarioRes = mensajeEnviado;
-        }
-
-        if (respuestaPartida[0].equalsIgnoreCase("0") && respuestaPartida[1].equalsIgnoreCase("contraseña")) {
-            System.out.println("ERROR COTNRASEÑA INCORRECTO");
-        } else if (respuestaPartida[0].equalsIgnoreCase("1") && respuestaPartida[1].equalsIgnoreCase("contraseña")) {
-            System.out.println("CONTRASEÑA CORRECTO!!!");
-            passRes = mensajeEnviado;
-        }
-
-        if (respuestaPartida[0].equalsIgnoreCase("0") && respuestaPartida[1].equalsIgnoreCase("fin")) {
-            System.out.println("Usuario " + usuarioRes + "logeado correctamente con contraseña " + passRes);
-        }
-
-    }
 }
