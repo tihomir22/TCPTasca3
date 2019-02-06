@@ -30,8 +30,7 @@ public class ServidorTh extends Thread {
     DataOutputStream output;
     String mensaje = "";
     final int puertoServidor = 5000;
-    public static boolean comprobarUser = false;
-    public static boolean comprobarPass = false;
+    
     DatosDeAcceso datos;
 
     public ServidorTh(DatosDeAcceso datos) {
@@ -45,12 +44,13 @@ public class ServidorTh extends Thread {
             this.socket_s = new ServerSocket(this.puertoServidor);
             System.out.println("[SERVIDOR] Iniciado");
             //Entra en espera de la conexion de un cliente...
-
-            while (comprobarPass == false || comprobarUser == false) {
+            int i=0;
+            while (i<3) {
                 sc = this.socket_s.accept();
                 HiloServidorTh hilo = new HiloServidorTh(sc, "Hilo" + Math.round(Math.random() * 100), datos);
                 hilo.start();
-                hilo.join();
+                i++;
+                //hilo.join();
 
             }
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
@@ -61,8 +61,6 @@ public class ServidorTh extends Thread {
         } catch (IOException ex) {
             Logger.getLogger(ServidorTh.class.getName()).log(Level.SEVERE, null, ex);
         } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(ServidorTh.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InterruptedException ex) {
             Logger.getLogger(ServidorTh.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

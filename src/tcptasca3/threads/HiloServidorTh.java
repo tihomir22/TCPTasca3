@@ -24,6 +24,8 @@ public class HiloServidorTh extends Thread {
     DataInputStream input;
     DataOutputStream output;
     String name, mensaje, usuario, contraseña;
+    public boolean comprobarUser = false;
+    public boolean comprobarPass = false;
 
     DatosDeAcceso datos = null;
 
@@ -59,10 +61,10 @@ public class HiloServidorTh extends Thread {
 
     public void procesarLogin(String mensaje, DataOutputStream output) throws IOException, NoSuchAlgorithmException { // el mensaje llegará en formato key : value
         String[] array = mensaje.split(":");
-        if (ServidorTh.comprobarUser == false) { // si todavia no se ha validado el usuario
+        if (comprobarUser == false) { // si todavia no se ha validado el usuario
             if (array[0].equalsIgnoreCase("usuario")) {
                 if (array[1].equalsIgnoreCase(datos.getUsuario())) {
-                    ServidorTh.comprobarUser = true;
+                    comprobarUser = true;
                     usuario = array[1];
                     System.out.println("[HILO SERVIDOR " + this.name + "] Usuario correcto");
                     output.writeUTF(this.generarRespuesta() + ":Usuario correcto");
@@ -76,10 +78,10 @@ public class HiloServidorTh extends Thread {
                 System.out.println("[HILO SERVIDOR " + this.name + "] Introducido contraseña cuando se esperaba usuario!");
                 output.writeUTF(this.generarRespuesta() + ":Introducido contraseña cuando se esperaba usuario");
             }
-        } else if (ServidorTh.comprobarPass == false && ServidorTh.comprobarUser == true) { // si todavia no se ha validado la contraseña
+        } else if (comprobarPass == false && comprobarUser == true) { // si todavia no se ha validado la contraseña
             if (array[0].equalsIgnoreCase("contraseña")) {
                 if (array[1].equalsIgnoreCase(datos.getContraseña())) {
-                    ServidorTh.comprobarPass = true;
+                    comprobarPass = true;
                     contraseña = array[1];
                     System.out.println("[HILO SERVIDOR " + this.name + "] Contraseña correcta");
                     MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
@@ -102,9 +104,9 @@ public class HiloServidorTh extends Thread {
     }
 
     public String generarRespuesta() {
-        if (ServidorTh.comprobarUser == false) {
+        if (comprobarUser == false) {
             return "usuario";
-        } else if (ServidorTh.comprobarPass == false) {
+        } else if (comprobarPass == false) {
             return "contraseña";
         } else {
             return "fin";
